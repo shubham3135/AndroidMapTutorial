@@ -35,6 +35,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListen
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         val zoomLevel = 18f
+        // for adding custom info window
+        map.setInfoWindowAdapter(MarkerInfoWindowAdapter(this, homeLatLng))
         markerDumri = map.addMarker(
             MarkerOptions()
                 .position(homeLatLng)
