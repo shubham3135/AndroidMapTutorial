@@ -4,14 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+    private val homeIcon: BitmapDescriptor by lazy {
+        val color = ContextCompat.getColor(this, R.color.home)
+        BitmapHelper.vectorToBitmap(this, R.drawable.ic_home, color)
+    }
+
     lateinit var map: GoogleMap
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,13 +44,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val markerDumri = map.addMarker(
             MarkerOptions()
                 .position(homeLatLng)
-                .title("Marker in Dumri")
+                .title("My home")
                     //for making marker draggable
                 .draggable(true)
                     // for customizing marker color
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                    // for marker image
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.common_full_open_on_phone))
+                    // for marker image/icon
+                .icon(homeIcon)
                     // for flattening marker
 //                .flat(true)
                     //for rotating marker
