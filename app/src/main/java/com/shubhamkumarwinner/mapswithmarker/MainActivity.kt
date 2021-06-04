@@ -5,13 +5,20 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener, OnInfoWindowClickListener {
     lateinit var map: GoogleMap
+
+    var latitude = 23.99497
+    var longitude = 86.01111
+    val homeLatLng = LatLng(latitude, longitude)
+    var markerDumri: Marker? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,46 +34,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        val latitude = 23.99497
-        val longitude = 86.01111
-        val homeLatLng = LatLng(latitude, longitude)
         val zoomLevel = 18f
+        markerDumri = map.addMarker(
+            MarkerOptions()
+                .position(homeLatLng)
+                .title("Marker in Dumri")
+                .snippet("Latitude: $latitude Longitude: $longitude")
+                .draggable(true)
+        )
 
         // for enabling zoom controller in map
         map.uiSettings.isZoomControlsEnabled = true
 
         map.mapType = GoogleMap.MAP_TYPE_NORMAL
-        val markerDumri = map.addMarker(
-            MarkerOptions()
-                .position(homeLatLng)
-                .title("Marker in Dumri")
-                    //for making marker draggable
-                .draggable(true)
-                    // for customizing marker color
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                    // for marker image
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.common_full_open_on_phone))
-                    // for flattening marker
-//                .flat(true)
-                    //for rotating marker
-//                .rotation(90f)
-        )
-        markerDumri.tag = 0
+        markerDumri!!.tag = 0
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.isTrafficEnabled = true
 
-        map.setOnMarkerClickListener {marker ->
-            val clickCount = marker.tag as? Int
-            clickCount?.let {
-                val newClickCount = it + 1
-                marker.tag = newClickCount
-                Toast.makeText(this, "${marker.title} clicked $newClickCount times", Toast.LENGTH_SHORT).show()
-            }
-            return@setOnMarkerClickListener false
-        }
-
         //adding marker drag listener
         map.setOnMarkerDragListener(this)
+
+        //adding info window clickListener
+        map.setOnInfoWindowClickListener(this)
     }
 
     override fun onMarkerDragStart(marker: Marker) {
@@ -81,7 +70,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMarkerDragEnd(marker: Marker) {
         val position = marker.position
+        latitude = position.latitude
+        longitude = position.longitude
+        markerDumri!!.snippet = "Latitude: $latitude Longitude: $longitude"
         Log.d("Drag", "${position.latitude}  ${position.longitude}")
+    }
+
+    override fun onInfoWindowClick(marker: Marker) {
+        val position = marker.position
+        Toast.makeText(
+            this, "${position.latitude}  ${position.longitude}",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 
