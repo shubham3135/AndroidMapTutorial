@@ -1,16 +1,19 @@
 package com.shubhamkumarwinner.mapswithmarker
 
 import android.content.Context
+import android.location.Geocoder
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import java.lang.Exception
 
 class MarkerInfoWindowAdapter(
     private val context: Context,
-    private val latLng: LatLng
+    private val latLng: LatLng,
+    private val address: String
 ) : GoogleMap.InfoWindowAdapter {
     override fun getInfoContents(marker: Marker?): View? {
 
@@ -23,7 +26,7 @@ class MarkerInfoWindowAdapter(
         ).text = "My Home"
         view.findViewById<TextView>(
             R.id.text_view_address
-        ).text = "Latitude: ${latLng.latitude} Longitude: ${latLng.longitude}"
+        ).text = address
         view.findViewById<TextView>(
             R.id.text_view_rating
         ).text = "This is My Home address"

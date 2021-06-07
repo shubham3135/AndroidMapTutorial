@@ -2,6 +2,7 @@ package com.shubhamkumarwinner.mapswithmarker
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener, OnInfoWindowClickListener {
     private val REQUEST_LOCATION_PERMISSION = 1
@@ -48,8 +50,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListen
         val zoomLevel = 15f
         val givenLatLng = LatLng(latitude, longitude)
 
-        // for adding custom info window
-        map.setInfoWindowAdapter(MarkerInfoWindowAdapter(this, givenLatLng))
+        // for adding custom address in info window
+        val geocoder = Geocoder(this)
+        try {
+            val addresses =
+                geocoder.getFromLocation(latitude, longitude, 1)
+            val address  = addresses[0].getAddressLine(0)
+            // for adding custom info window
+            map.setInfoWindowAdapter(MarkerInfoWindowAdapter(this, givenLatLng, address!!))
+        } catch (e: Exception) {
+            Log.d(TAG, "Unable to get street address")
+        }// for adding custom address in info window
+
         markerDumri = map.addMarker(
             MarkerOptions()
                 .position(givenLatLng)
